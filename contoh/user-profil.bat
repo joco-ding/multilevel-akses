@@ -1,0 +1,1 @@
+curl -i -H @%~dp0header-token.txt http://localhost:8071/user/profil

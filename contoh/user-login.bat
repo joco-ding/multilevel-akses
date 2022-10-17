@@ -1,0 +1,1 @@
+curl -i -H @%~dp0header-json.txt -d @%~dp0akun-super.json http://localhost:8071/user/login

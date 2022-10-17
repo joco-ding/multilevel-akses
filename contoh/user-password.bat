@@ -1,0 +1,1 @@
+curl -i -H @%~dp0header-json.txt -H @%~dp0header-token.txt -d @%~dp0password.json http://localhost:8071/user/password
