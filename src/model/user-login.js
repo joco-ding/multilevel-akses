@@ -10,7 +10,7 @@ const userLogin = async (req, res) => {
 
   let row = {}
   try {
-    const [rows, _] = await db.query("SELECT id, status, password, SHA2(?, 256) sentpassword FROM tb_pengguna WHERE idpengguna=?", [password, idpengguna])
+    const [rows, _] = await db.query("SELECT t1.id, t1.status, t1.password, SHA2(?, 256) sentpassword, t2.kapabilitas FROM tb_pengguna t1 JOIN tb_kasta t2 ON t2.id=t1.kasta WHERE t1.idpengguna=?", [password, idpengguna])
     if (typeof rows.length === 'number' && rows.length === 1)
       row = rows[0]
   } catch (error) {
@@ -30,13 +30,15 @@ const userLogin = async (req, res) => {
   const kunci = uuidv4()
 
   try {
-    await db.execute("UPDATE tb_pengguna SET kunci=? WHERE id=?", [kunci, row.id])
+    await db.execute("UPDATE tb_pengguna SET kunci = ? WHERE id = ?", [kunci, row.id])
   } catch (error) {
     console.error("userLogin #2", error)
     return res.status(500).json({ ok: false, message: 'Terdapat masalah di sistem' })
   }
 
-  const token = jwt.sign({ idpengguna }, kunci, { expiresIn: "7d" })
+  const kapabilitas = row.kapabilitas.split(',')
+
+  const token = jwt.sign({ idpengguna, kapabilitas }, kunci, { expiresIn: "7d" })
   res.json({ ok: true, message: 'Berhasil', data: token })
 }
 
