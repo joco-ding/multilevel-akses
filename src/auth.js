@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import { AKTIFSTATUS, SUPERUSER } from "./config.js"
+import { AKTIFSTATUS } from "./config.js"
 import url from "url"
 import db from "./model/db.js"
 
@@ -36,12 +36,10 @@ export default async function (req, res, next) {
     return res.status(403).json({ ok: false, message: 'Permintaan tidak valid #5' })
   }
 
-  if (row.kapabilitas !== SUPERUSER) {
-    const allowPaths = row.kapabilitas.split(',')
-    const path = url.parse(req.originalUrl).pathname
-    if (!allowPaths.includes(path))
-      return res.status(403).json({ ok: false, message: 'Permintaan tidak valid #6' })
-  }
+  const allowPaths = row.kapabilitas.split(',')
+  const path = url.parse(req.originalUrl).pathname
+  if (!allowPaths.includes(path))
+    return res.status(400).json({ ok: false, message: 'Permintaan tidak valid #6' })
   req.user = { namalengkap: row.namalengkap, idpengguna: decodedToken.idpengguna }
   return next()
 }
